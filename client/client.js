@@ -1,6 +1,5 @@
 console.log("client.js executing");
 
-import io from 'socket.io-client';
 
 const socket = io();
 let roomUniqueId = null;
