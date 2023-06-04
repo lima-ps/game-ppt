@@ -5,18 +5,15 @@ const path = require('path');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const rooms = {};
 
 app.use(express.static(path.join(__dirname, 'client')));
 
-app.get('/healthcheck', (req, res) => {
-    res.send('<h1>RPS App running...</h1>');
-});
-
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/client/index.html');
-});
 
 io.on('connection', (socket) => {
     console.log('a user connected');
@@ -86,8 +83,11 @@ function declareWinner(roomUniqueId) {
     io.sockets.to(roomUniqueId).emit("result", {
         winner: winner
     });
-    rooms[roomUniqueId].p1Choice = null;
-    rooms[roomUniqueId].p2Choice = null;
+    setTimeout(() => {
+        rooms[roomUniqueId].p1Choice = null;
+        rooms[roomUniqueId].p2Choice = null;
+        io.sockets.to(roomUniqueId).emit("joinGame");
+    }, 3000);
 }
 
 server.listen(3000, () => {

@@ -72,6 +72,7 @@ socket.on("result",(data)=>{
     document.getElementById('winnerArea').innerHTML = winnerText;
 });
 
+
 function sendChoice(rpsValue) {
     const choiceEvent= player1 ? "p1Choice" : "p2Choice";
     socket.emit(choiceEvent,{
