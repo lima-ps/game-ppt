@@ -96,3 +96,28 @@ function createOpponentChoiceButton(data) {
     opponentButton.innerText = data.rpsValue;
     document.getElementById('player2Choice').appendChild(opponentButton);
 }
+
+// Function to restart the game
+function restartGame() {
+    socket.emit('restartGame', { roomUniqueId: roomUniqueId });
+}
+
+// Add event listener for the "restartGame" event
+socket.on("restartGame", () => {
+    // Reset game state and display
+    document.getElementById('opponentState').style.display = 'block';
+    document.getElementById('opponentButton').style.display = 'none';
+    document.getElementById('winnerArea').innerHTML = '';
+
+    // Clear player choices
+    document.getElementById('player1Choice').innerHTML = `
+        <button class="rock" onclick="sendChoice('Rock')">Rock</button>
+        <button class="paper" onclick="sendChoice('Paper')">Paper</button>
+        <button class="scissor" onclick="sendChoice('Scissor')">Scissors</button>
+    `;
+
+    // Clear opponent choice
+    document.getElementById('player2Choice').innerHTML = `
+        <p id="opponentState">Ready! Make a choice</p>
+    `;
+});

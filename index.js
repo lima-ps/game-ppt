@@ -53,6 +53,14 @@ io.on('connection', (socket) => {
             declareWinner(data.roomUniqueId);
         }
     });
+
+    socket.on("restartGame", (data) => {
+        // Reset game state and display
+        rooms[data.roomUniqueId].p1Choice = null;
+        rooms[data.roomUniqueId].p2Choice = null;
+        io.sockets.to(data.roomUniqueId).emit("joinGame");
+    });
+
 });
 
 function declareWinner(roomUniqueId) {
@@ -84,11 +92,15 @@ function declareWinner(roomUniqueId) {
         winner: winner
     });
     setTimeout(() => {
-        rooms[roomUniqueId].p1Choice = null;
-        rooms[roomUniqueId].p2Choice = null;
-        io.sockets.to(roomUniqueId).emit("joinGame");
+        if (rooms[roomUniqueId]) { // Check if room still exists (not deleted during restart)
+            rooms[roomUniqueId].p1Choice = null;
+            rooms[roomUniqueId].p2Choice = null;
+            io.sockets.to(roomUniqueId).emit("restartGame", { roomUniqueId: roomUniqueId });
+        }
+        
     }, 3000);
 }
+
 
 
 const PORT = process.env.PORT || 3000;
